@@ -10,7 +10,9 @@ public class MovementController : MonoBehaviour {
 	public Arduino2.SensorID sensor_id_ = Arduino2.SensorID.None;
 
 	public GameObject cara_cubo_;
+	private Rigidbody cara_cubo_body_;
 	public GameObject cara_circulo_;
+	private Rigidbody cara_circulo_body_;
 
 	public AnimationCurve curve_anim_volver_;
 	public float anim_time_volver_ = 0.3f;
@@ -44,6 +46,8 @@ public class MovementController : MonoBehaviour {
 	void Awake()
 	{
 		begining_z_pos_ = cara_cubo_.transform.position.z;
+		cara_cubo_body_ = cara_cubo_.gameObject.GetComponent<Rigidbody> ();
+		cara_circulo_body_ = cara_circulo_.gameObject.GetComponent<Rigidbody> ();
 	}
 
 	// Update is called once per frame
@@ -107,13 +111,14 @@ public class MovementController : MonoBehaviour {
 		//seteo pos cubo
 		Vector3 new_pos = cara_cubo_.transform.position;
 		new_pos.z = new_pos_z_;
-		cara_cubo_.transform.position = new_pos;
+		//cara_cubo_.transform.position = new_pos;
+		cara_cubo_body_.MovePosition (new_pos);
 
 		//seteo circulo
 		new_pos = cara_circulo_.transform.position;
 		new_pos.z = new_pos_z_;
-		cara_circulo_.transform.position = new_pos;
-
+		//cara_circulo_.transform.position = new_pos;
+		cara_circulo_body_.MovePosition (new_pos);
 
         
         if (Input.GetKey(KeyCode.Q))
@@ -178,11 +183,5 @@ public class MovementController : MonoBehaviour {
 	}
 
 
-	void OnTriggerEnter(Collider other)
-	{
-		if (other.tag == "FloatingObject") {
-			Rigidbody body = other.gameObject.GetComponent<Rigidbody> ();
-			body.AddForce (0.0f, 0.0f, 10.0f);
-		}
-	}
+
 }
