@@ -9,14 +9,14 @@ using System.IO.Ports;
 
 public class Arduino2 : MonoBehaviour {
 
-	int time_out_ = 100;
+	int time_out_ = 5;
 
 	/* The serial port where the Arduino is connected. */
 	[Tooltip("The serial port where the Arduino is connected")]
 	private string port = "/dev/cu.usbmodem1411";
 	/* The baudrate of the serial port. */
 	[Tooltip("The baudrate of the serial port")]
-	private int baudrate = 115200;
+	private int baudrate = 9600;
 
 	private SerialPort stream;
 
@@ -71,12 +71,12 @@ public class Arduino2 : MonoBehaviour {
 						stream.Read (buffer, 0, bytes);
 						if(buffer [0]==c0 && buffer [1]==c1 && buffer [2]==c2)
 						{
-							for (int i = 3; i < 5; ++i) {
+							for (int i = 3; i < bytes; ++i) {
 								sensor_values_ [i-3] = (int)buffer [i];
 							}
 						}
 						//stream.BaseStream.Flush();
-
+					
 					} catch (System.Exception) {
 						//Debug.Log ("error");
 					}
@@ -99,38 +99,9 @@ public class Arduino2 : MonoBehaviour {
 
 	public int GetSensorValue (SensorID sensor)
 	{
-		if (sensor_values_ [0] == (int)sensor) {
-			int cm = sensor_values_ [1];
-			sensor_values_[0] = 0;
-			sensor_values_[1] = 0;
-			return cm;
-
-		}else if(sensor_values_ [2] == (int)sensor)
-		{
-			int cm = sensor_values_ [3];
-			sensor_values_[2] = 0;
-			sensor_values_[3] = 0;
-			Debug.Log ("sensor 2: " +cm.ToString() + " ");
-			return cm;
-
-		}
-
-		return 0;
+		return sensor_values_[(int)sensor];
 	}
-
-	//no borra los datos
-	public int GetSensorValueText (SensorID sensor)
-	{
-		if (sensor_values_ [0] == (int)sensor+1) {
-			return sensor_values_ [1];
-		}else if(sensor_values_ [2] == (int)sensor+1)
-		{
-			return sensor_values_ [3];
-		}
-
-		return 0;
-	}
-
+		
 
 	// Use this for initialization
 	void Start () {
@@ -143,7 +114,7 @@ public class Arduino2 : MonoBehaviour {
 		//Creamos la instancia del hilo 
 		hilo = new Thread(delegado); 
 		//Iniciamos el hilo 
-		hilo.Start();
+		//hilo.Start();
 	}
 		
 
@@ -155,11 +126,12 @@ public class Arduino2 : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
-		/*	
+		
 		if (stream.IsOpen) 
 		{
 			try
 			{
+				/*
 				int bytes = stream.BytesToRead;
 				//Debug.Log("Numero de bytes: " + bytes);
 				byte[] buffer = new byte[bytes];
@@ -171,11 +143,20 @@ public class Arduino2 : MonoBehaviour {
 					}
 				}
 				//stream.BaseStream.Flush();
+				*/
+
+				//Debug.Log(stream.ReadLine().ToString());
+				sensor_values_[0] = Int32.Parse( stream.ReadLine().ToString());
+				sensor_values_[1] = Int32.Parse( stream.ReadLine().ToString());
+
+				Debug.Log("Sensor 1: " + sensor_values_[0]);
+				Debug.Log("Sensor 2: " + sensor_values_[1]);
 
 			} catch (System.Exception) {
 
 			}
 		}
-		*/
+
+
 	}
 }

@@ -28,9 +28,9 @@ public class TextoDistancia : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (!filtrate_)
-			texto_.text = arduino_.GetSensorValueText (sensor_id_).ToString ();
+			texto_.text = arduino_.GetSensorValue (sensor_id_).ToString ();
 		else {
-			int value = arduino_.GetSensorValueText (sensor_id_);
+			int value = arduino_.GetSensorValue (sensor_id_);
 			if (value > 100)
 				value = 100;
 

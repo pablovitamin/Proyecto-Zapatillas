@@ -33,6 +33,8 @@ public class MovementController : MonoBehaviour {
 
 	float new_pos_z_;
 
+	int last_arduino_value_ = 0;
+
 	private List<int> list_0_;
 
 	private Vector3 default_gravity_;
@@ -55,31 +57,22 @@ public class MovementController : MonoBehaviour {
 
 		new_pos_z_ = cara_cubo_.transform.position.z;
 
- 
 		int arduino_value = arduino_.GetSensorValue (sensor_id_);
-		//if(arduino_value!=0)
-			//Debug.Log ("value: " + arduino_value.ToString());
-		//sistema que detecta si devuelve 0 de valor 
-		if (arduino_value == 0) {
-			list_0_.Add (arduino_value);
-			//arduino_value = arduino_last_value_;
-		} else {
-			list_0_.Clear ();
-		}
+
+		if (arduino_value > 1000)
+			arduino_value = last_arduino_value_;
+		//Debug.Log (arduino_value);
 
 		//movimiento
 		if (!is_running_any_anim_) {
-			if ((list_0_.Count > 160 || arduino_value >= 150) && begining_z_pos_!= new_pos_z_) {
-				must_run_anim_volver_ = true;
-				is_running_any_anim_ = true;
-				//new_pos.z = new_pos.z - (2.0f * Time.deltaTime);
-			} else if ((arduino_value > 0 && arduino_value < 80) && 1.5f!= new_pos_z_){
-				must_run_anim_0_49_ = true;
-				is_running_any_anim_ = true;
-				//new_pos.z = new_pos.z + (1.0f * Time.deltaTime);
-			} else if (arduino_value >= 80 && arduino_value < 150) {
-				must_run_anim_50_100_ = true;
-				is_running_any_anim_ = true;
+			if ((arduino_value >= 100) && begining_z_pos_!= new_pos_z_) {
+				//must_run_anim_volver_ = true;
+				//is_running_any_anim_ = true;
+				new_pos_z_ = new_pos_z_ - (2.0f * Time.deltaTime);
+			} else if ( arduino_value < 100 && 1.5f!= new_pos_z_){
+				//must_run_anim_0_49_ = true;
+				//is_running_any_anim_ = true;
+				new_pos_z_ = new_pos_z_ + (1.0f * Time.deltaTime);
 			} 
 		}
 		else
@@ -88,12 +81,10 @@ public class MovementController : MonoBehaviour {
 				RunAnimVolver ();
 			} else if (must_run_anim_0_49_) {
 				RunAnim0_49 ();
-			} else if (must_run_anim_50_100_) {
-				RunAnim50_100 ();
-			}
+			} 
 		}
 
-		//arduino_last_value_ = arduino_value;
+		last_arduino_value_ = arduino_value;
 			
 
 
