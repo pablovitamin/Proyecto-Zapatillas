@@ -24,7 +24,6 @@ public class MovementController : MonoBehaviour {
 
 	private bool must_run_anim_volver_ = false;
 	private bool must_run_anim_0_49_ = false;
-	private bool must_run_anim_50_100_ = false;
 	
 	private float time_pased_ = 0.0f;
 	private float begining_z_pos_ = 0.0f;
@@ -35,13 +34,13 @@ public class MovementController : MonoBehaviour {
 
 	int last_arduino_value_ = 0;
 
-	private List<int> list_0_;
+	List<int> list_1000_;
 
 	private Vector3 default_gravity_;
 
 	// Use this for initialization
 	void Start () {
-		list_0_ = new List<int>();
+		list_1000_ = new List<int>();
 		default_gravity_ = Physics.gravity;
 	}
 
@@ -59,8 +58,15 @@ public class MovementController : MonoBehaviour {
 
 		int arduino_value = arduino_.GetSensorValue (sensor_id_);
 
-		if (arduino_value > 1000)
+		if (arduino_value > 1000) {
 			arduino_value = last_arduino_value_;
+			list_1000_.Add (1);
+		}
+
+		if (list_1000_.Count > 35) {
+			list_1000_.Clear();
+			arduino_value = 200;
+		}
 		//Debug.Log (arduino_value);
 
 		//movimiento
@@ -159,19 +165,6 @@ public class MovementController : MonoBehaviour {
 		}
 	}
 
-	void RunAnim50_100()
-	{
-		time_pased_ += Time.deltaTime;
-		new_pos_z_ = Mathf.Lerp (begining_z_pos_,1.0f, curve_anim_50_100_.Evaluate(time_pased_/anim_time_50_100_));
-		//Debug.Log ("Ejecutando Animacion  ");
-		if (time_pased_ > anim_time_50_100_) 
-		{
-			//Debug.Log ("Animacion finalizada ");
-			time_pased_ = 0.0f;
-			must_run_anim_50_100_ = false;
-			is_running_any_anim_ = false;
-		}
-	}
 
 
 

@@ -145,12 +145,17 @@ public class Arduino2 : MonoBehaviour {
 				//stream.BaseStream.Flush();
 				*/
 
-				//Debug.Log(stream.ReadLine().ToString());
-				sensor_values_[0] = Int32.Parse( stream.ReadLine().ToString());
-				sensor_values_[1] = Int32.Parse( stream.ReadLine().ToString());
+			
+			
+				string[] lines = stream.ReadLine().ToString().Split(',');
+		
+				sensor_values_[0] = Int32.Parse( lines[0].ToString());
+				sensor_values_[1] = Int32.Parse( lines[1].ToString());
 
-				Debug.Log("Sensor 1: " + sensor_values_[0]);
-				Debug.Log("Sensor 2: " + sensor_values_[1]);
+
+
+				//Debug.Log("Sensor 1: " + sensor_values_[0]);
+				//Debug.Log("Sensor 2: " + sensor_values_[1]);
 
 			} catch (System.Exception) {
 
