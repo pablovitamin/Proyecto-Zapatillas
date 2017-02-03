@@ -38,6 +38,13 @@ public class MovementController : MonoBehaviour {
 
 	private Vector3 default_gravity_;
 
+
+
+	public Animator anim1_;
+	public string anim1_state_name_;
+	//public Animator anim2_;
+
+
 	// Use this for initialization
 	void Start () {
 		list_1000_ = new List<int>();
@@ -74,6 +81,7 @@ public class MovementController : MonoBehaviour {
 			if ((arduino_value >= 100) && begining_z_pos_!= new_pos_z_) {
 				//must_run_anim_volver_ = true;
 				//is_running_any_anim_ = true;
+
 				new_pos_z_ = new_pos_z_ - (2.0f * Time.deltaTime);
 			} else if ( arduino_value < 100 && 1.5f!= new_pos_z_){
 				//must_run_anim_0_49_ = true;
@@ -98,11 +106,13 @@ public class MovementController : MonoBehaviour {
 		if (new_pos_z_ < 0.0f)
 		{
 			new_pos_z_ = 0.0f;
+			anim1_.Play ("init_state");
 		}
 
 		if (new_pos_z_ > 1.5f)
 		{
 			new_pos_z_ = 1.5f;
+			anim1_.Play (anim1_state_name_);
 		}
 
 		//seteo pos cubo

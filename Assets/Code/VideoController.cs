@@ -6,28 +6,13 @@ public class VideoController : MonoBehaviour {
 
 
     public MovieTexture movie_text_1_;
-    public MovieTexture movie_text_2_;
-    public Quaternion default_rotation_;
+
+	Vector3 default_position_;
 
     private Material mat_;
 
-    //desintegration anim
-    enum AnimPhase
-    {
-        None,
-        StartDesintegration,
-        RunDesintegration,
-        StartReconstruction,
-        RunReconstruction,
-        EndAnim
-    };
-    AnimPhase anim_phase_ = AnimPhase.None;
-
-    float time_to_desintegrate = 0.5f;
-    float time_to_desintegrate_pased_ = 0.0f;
-
-    float time_to_reconstruction = 0.5f;
-    float time_to_reconstruction_pased_ = 0.0f;
+	public float anim_time_ = 0.5f;
+	private float anim_time_pased_ = 0.0f;
 
 
     // Use this for initialization
@@ -40,105 +25,57 @@ public class VideoController : MonoBehaviour {
         MeshRenderer ren = gameObject.GetComponent<MeshRenderer>();
         mat_ = ren.material;
         movie_text_1_.loop = true;
-        //mat_.mainTexture = movie_text_2_; 
-        default_rotation_ = gameObject.transform.rotation;
+		default_position_ = gameObject.transform.position;
+       
     }
     // Update is called once per frame
     void Update () {
 
-        // float y0 = transform.rotation.y;
-        //transform.rotation.Set(0.0f,0.0f, 200.0f * Mathf.Sin(10.0f * Time.time),1.0f);
+		if (Input.GetKey (KeyCode.Q) && !movie_text_1_.isPlaying)
+		{
+			PlayAnimVideo ();
+		}
+		else if(Input.GetKeyUp(KeyCode.Q))
+		{
+			ResetAnimVideo ();
+		}
 
-        UpdateTransitionAnim();
+       
     }
 
 
-    public void UpdateTransitionAnim()
-    {
-        
-        switch (anim_phase_)
-        {
-            case AnimPhase.StartDesintegration:
-                {
-                    anim_phase_ = AnimPhase.RunDesintegration;
-                    
-                }
-                break;
-            case AnimPhase.RunDesintegration:
-                {
-                    UpdateDesintegration();
-                }
-                break;
-            case AnimPhase.StartReconstruction:
-                {
-                    anim_phase_ = AnimPhase.RunReconstruction;
-                    if (movie_text_1_ == mat_.mainTexture)
-                    {
-                        movie_text_1_.Stop();
-                        mat_.mainTexture = movie_text_2_;
-                    }
-                    else
-                    {
-                        mat_.mainTexture = movie_text_1_;
-                        movie_text_2_.Stop();
-                    }
-                }
-                break;
-            case AnimPhase.RunReconstruction:
-                {
-                    UpdateReconstruction();
-                }
-                break;
-            case AnimPhase.EndAnim:
-                {
-                    anim_phase_ = AnimPhase.None;
-                }
-                break;
+	public void PlayAnimVideo()
+	{
+		anim_time_pased_ += Time.deltaTime;
 
-        }
-        
-    }
+		Vector3 pos = gameObject.transform.position;
+		pos.y = Mathf.Lerp (default_position_.y, 0.0f, anim_time_pased_/ anim_time_ );
 
-    void UpdateDesintegration()
-    {
-        time_to_desintegrate_pased_ += Time.deltaTime;
+		gameObject.transform.position = pos;
 
-        float desintegration_value = Mathf.Lerp(0.0f, 1.0f, (time_to_desintegrate_pased_ / time_to_desintegrate));
+		if (anim_time_pased_ > anim_time_) 
+		{
+			anim_time_pased_ = 0.0f;
+			PlayVideo ();
+		}
+	}
 
-        mat_.SetFloat("_Desintegracion", desintegration_value);
+	public void StopAnimVideo()
+	{
+		
+	}
 
-        if (time_to_desintegrate_pased_ > time_to_desintegrate)
-        {
-            time_to_desintegrate_pased_ = 0.0f;
-            anim_phase_ = AnimPhase.StartReconstruction;
-        }
-    }
-
-    void UpdateReconstruction()
-    {
-        time_to_reconstruction_pased_ += Time.deltaTime;
-
-        float reconstruction_value = Mathf.Lerp(1.0f, 0.0f, (time_to_reconstruction_pased_ / time_to_reconstruction));
-
-        mat_.SetFloat("_Desintegracion", reconstruction_value);
-
-        if (time_to_reconstruction_pased_ > time_to_reconstruction)
-        {
-            time_to_reconstruction_pased_ = 0.0f;
-            anim_phase_ = AnimPhase.EndAnim;
-        }
-    }
-
-    public void PlayVideoAnim()
-    {
-        anim_phase_ = AnimPhase.StartDesintegration;
-    }
-
+	public void ResetAnimVideo()
+	{
+		StopVideo ();
+		gameObject.transform.position = default_position_;
+	}
+  
     public void PlayVideo()
     {
         if (!movie_text_1_.isPlaying)
         {
-            Debug.Log("Playing video");
+            //Debug.Log("Playing video");
             movie_text_1_.Play();
         }
     }
@@ -146,9 +83,7 @@ public class VideoController : MonoBehaviour {
     public void StopVideo()
     {
         movie_text_1_.Stop();
-        movie_text_2_.Stop();
-        anim_phase_ = AnimPhase.None;
-        mat_.SetFloat("_Desintegracion", 0.0f);
+        //mat_.SetFloat("_Desintegracion", 0.0f);
         mat_.mainTexture = movie_text_1_;
     }
 }
