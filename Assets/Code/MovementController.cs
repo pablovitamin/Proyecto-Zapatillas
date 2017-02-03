@@ -107,6 +107,7 @@ public class MovementController : MonoBehaviour {
 		{
 			new_pos_z_ = 0.0f;
 			anim1_.Play ("init_state");
+			//anim1_.Stop ();
 		}
 
 		if (new_pos_z_ > 1.5f)
